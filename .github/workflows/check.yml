@@ -1,0 +1,31 @@
+name: YouTube Monitor
+on:
+  schedule:
+    - cron: '*/5 * * * *' # بيفحص كل 5 دقائق
+  workflow_dispatch: # زرار للتشغيل اليدوي
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: pip install requests yt-dlp
+
+      - name: Run Python script
+        run: python main.py
+
+      - name: Save Last IDs
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add *.txt
+          git commit -m "Update last video IDs" || echo "No changes to commit"
+          git push
